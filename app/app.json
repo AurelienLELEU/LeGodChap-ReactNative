@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "LeGodChap",
+    "slug": "rnative",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./img/LeGod-removebg-preview.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./img/LeGod-removebg-preview.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./img/LeGod-removebg-preview.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.wardog.rnative"
+    },
+    "web": {
+      "favicon": "./img/LeGod-removebg-preview.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "52bd66a6-e61a-426c-9171-2e7bf21ad118"
+      }
+    }
+  }
+}
