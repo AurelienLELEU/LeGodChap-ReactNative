@@ -2,5 +2,5 @@
 
 - Use Case : https://www.canva.com/design/DAF8SLjRXb4/73h3y8gGI6VpmKYNvoiwDg/edit?utm_content=DAF8SLjRXb4&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 - Schéma de base de données : https://dbdiagram.io/d/65c5f539ac844320aecc3e84
-- Diagramme de Flux de votre app :
-- Diagramme de Gant :
+- Diagramme de Flux de votre app : https://app.diagrams.net/#G1HJ8fJg3hgSjpXS5Kdk5Yq6zaepN9_90s
+- Diagramme de Gant : ![image](https://github.com/AurelienLELEU/LeGodChap-ReactNative/assets/33595582/7a9eeddd-d556-440d-a067-facfa4f15a66)
