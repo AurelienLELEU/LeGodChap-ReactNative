@@ -1,9 +1,10 @@
-import React, { useState, useEffect} from 'react';
-import { View, TextInput, Button, StyleSheet} from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const supabaseUrl = 'https://eblwtaeglbtxppddyygp.supabase.co';
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibHd0YWVnbGJ0eHBwZGR5eWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NzQzNTMsImV4cCI6MjAyMjQ1MDM1M30.6t0_jPNYubLCPmEl8TrK8GCG8g4QRp1mSUejzcMLPH8"
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibHd0YWVnbGJ0eHBwZGR5eWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NzQzNTMsImV4cCI6MjAyMjQ1MDM1M30.6t0_jPNYubLCPmEl8TrK8GCG8g4QRp1mSUejzcMLPH8";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -26,6 +27,8 @@ const Login = ({ navigation, setIsLoggedIn }) => {
         return;
       }
       setIsLoggedIn(users.id);
+      // Store user ID in AsyncStorage
+      await AsyncStorage.setItem('loggedInUserId', users.id.toString());
       navigation.navigate('Home');
     } catch (error) {
       console.error('Error logging in:', error.message);
@@ -43,10 +46,10 @@ const Login = ({ navigation, setIsLoggedIn }) => {
       <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
       <Button title="Login" onPress={handleLogin} />
       <Button title="Signup" onPress={handleSignup} />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
