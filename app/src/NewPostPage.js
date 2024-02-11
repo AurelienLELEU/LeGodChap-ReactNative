@@ -1,6 +1,7 @@
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
 import React, { useState, useEffect } from 'react';
+// import axios from 'axios'; // Import axios for making HTTP requests
 
 const supabaseUrl = 'https://eblwtaeglbtxppddyygp.supabase.co';
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibHd0YWVnbGJ0eHBwZGR5eWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NzQzNTMsImV4cCI6MjAyMjQ1MDM1M30.6t0_jPNYubLCPmEl8TrK8GCG8g4QRp1mSUejzcMLPH8"
@@ -22,7 +23,8 @@ export default function NewPostPage({ navigation, publisherId, posts, setPosts }
 
   const handleCreatePost = async () => {
     try {
-      const { data, error } = await supabase.from('posts').insert([ //insert => ajouter en bdd
+
+      const { data, error } = await supabase.from('posts').insert([
         {
           titleFR: title,
           titleEN: title,
@@ -32,7 +34,7 @@ export default function NewPostPage({ navigation, publisherId, posts, setPosts }
           publisherId: Number(publisherId),
         },
       ]);
-      console.log(Number(publisherId));
+      
       fetchPosts();
       navigation.goBack();
     } catch (error) {

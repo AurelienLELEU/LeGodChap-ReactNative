@@ -10,17 +10,25 @@ export default function FREN({ onLanguageChange }) {
   };
 
   return (
-    <View style={styles.test}>
-      {language === 'FR' ? <Button onPress={() => toggleLanguage('EN')} title="EN" /> : <Button onPress={() => toggleLanguage('FR')} title="FR" />}
+    <View style={styles.container}>
+      {language === 'FR' ? (
+        <View style={styles.button}>
+          <Button onPress={() => toggleLanguage('EN')} title="EN" color="white" />
+        </View>
+      ) : (
+        <View style={styles.button}>
+          <Button onPress={() => toggleLanguage('FR')} title="FR" color="white" />
+        </View>
+      )}
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  test: {
-    flex: 1,
-    alignContent: 'flex-end',
-    justifyContent: 'flex-end',
-    backgroundColor: 'black',
-    flexDirection: 'row',
+  container: {
+    color: 'white',
+  },
+  button: {
+    backgroundColor: 'transparent', // Set background color to transparent to remove the default blue background
   },
 });
