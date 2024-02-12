@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
@@ -6,7 +7,7 @@ const supabaseUrl = 'https://eblwtaeglbtxppddyygp.supabase.co';
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibHd0YWVnbGJ0eHBwZGR5eWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NzQzNTMsImV4cCI6MjAyMjQ1MDM1M30.6t0_jPNYubLCPmEl8TrK8GCG8g4QRp1mSUejzcMLPH8";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const EditUser = ({ navigation, isLoggedIn }) => {
+const EditUser = ({ navigation, isLoggedIn, setIsLoggedIn, posts={posts}, setPosts={setPosts} }) => {
   const [description, setDescription] = useState('');
   const [username, setUsername] = useState('');
   const [mail, setMail] = useState('');
@@ -48,6 +49,29 @@ const EditUser = ({ navigation, isLoggedIn }) => {
       console.error('Error fetching post:', error.message);
     }
   };
+  const handleLogout = async () => {
+    setIsLoggedIn(false);
+    await AsyncStorage.removeItem('loggedInUserId');
+  };
+  const handleRemove = async () => {
+    // Navigate to the EditPostPage with postId as parameter
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', isLoggedIn);
+
+      if (error) {
+        setError(error.message);
+      } else {
+        handleLogout();
+        fetchPosts();
+        navigation.navigate('Home');
+      }
+    } catch (error) {
+      console.error('Error updating post:', error.message);
+    }
+  };
 
   const handleUpdateUser = async () => {
     try {
@@ -61,6 +85,7 @@ const EditUser = ({ navigation, isLoggedIn }) => {
       if (error) {
         setError(error.message);
       } else {
+        fetchPosts();
         navigation.navigate('Home'); // Navigate back to home after successful update
       }
     } catch (error) {
@@ -95,6 +120,7 @@ const EditUser = ({ navigation, isLoggedIn }) => {
         onChangeText={setDescription}
       />
       <Button title="Update" onPress={handleUpdateUser} />
+      <Button title="Remove account" onPress={handleRemove} />
     </View>
   );
 };

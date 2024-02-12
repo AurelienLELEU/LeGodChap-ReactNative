@@ -153,7 +153,7 @@ export default function App() {
           {({ navigation, route }) => <EditPostPage navigation={navigation} route={route} posts={posts} setPosts={setPosts} />}
         </Stack.Screen>
         <Stack.Screen name="EditUser" options={{ title: 'EditUser', headerShown: false }}>
-          {({ navigation }) => <EditUser navigation={navigation} isLoggedIn={isLoggedIn} posts={posts} setPosts={setPosts} />}
+          {({ navigation }) => <EditUser navigation={navigation} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} posts={posts} setPosts={setPosts} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
