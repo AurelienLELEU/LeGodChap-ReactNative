@@ -1,4 +1,4 @@
-import { View, Button, StyleSheet, Image, ScrollView, StatusBar } from 'react-native';
+import { View, Button, StyleSheet, Image, ScrollView, StatusBar, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,8 +13,7 @@ import Signup from './src/Signup';
 import Login from './src/Login';
 import FREN from './src/FREN';
 import Post from './src/Post';
-
-
+import SearchBar from 'react-native-searchbar';
 
 const supabaseUrl = 'https://eblwtaeglbtxppddyygp.supabase.co';
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibHd0YWVnbGJ0eHBwZGR5eWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NzQzNTMsImV4cCI6MjAyMjQ1MDM1M30.6t0_jPNYubLCPmEl8TrK8GCG8g4QRp1mSUejzcMLPH8";
@@ -26,6 +25,8 @@ export default function App() {
   const [language, setLanguage] = useState('FR');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [posts, setPosts] = useState('');
+  const [filter, setFilter] = useState('');
+
 
   useEffect(() => {
     fetchUserInfo();
@@ -122,18 +123,44 @@ export default function App() {
                       <SvgIconEditProfile onPress={() => navigation.navigate('EditUser')} />
                     </>
                   )}
-                  {isLoggedIn ? <>
+                  {isLoggedIn ? (
                     <SvgIconLogout onPress={() => { handleLogout(); }} />
-                  </> : <>
+                  ) : (
                     <SvgIconLogin onPress={() => { navigation.navigate('Login'); }} />
-                  </>}
+                  )}
                 </View>
-
+              </View>
+              <View style={styles.imgContainer2}>
+                <View style={styles.imgContainer2}>
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search..."
+                    onChangeText={(text) => setFilter(text)}
+                  />
+                </View>
               </View>
               <ScrollView>
-                {posts && posts.map((post, index) => (
-                  <Post key={index} title={language === 'FR' ? post.titleFR : post.titleEN} content={language === 'FR' ? post.descFR : post.descEN} image={post.image} publisherId={post.publisherId} postId={post.id} posts={posts} setPosts={setPosts} isLoggedIn={isLoggedIn} />
-                ))}
+                {posts &&
+                  posts
+                    .filter((post) => {
+                      const title = language === 'FR' ? post.titleFR : post.titleEN;
+                      const content = language === 'FR' ? post.descFR : post.descEN;
+                      return title.toLowerCase().includes(filter.toLowerCase()) || content.toLowerCase().includes(filter.toLowerCase());
+                    })
+                    .map((post, index) => (
+                      <Post
+                        key={index}
+                        title={language === 'FR' ? post.titleFR : post.titleEN}
+                        content={language === 'FR' ? post.descFR : post.descEN}
+                        image={post.image}
+                        publisherId={post.publisherId}
+                        postId={post.id}
+                        posts={posts}
+                        setPosts={setPosts}
+                        isLoggedIn={isLoggedIn}
+                        filter={filter}
+                      />
+                    ))}
               </ScrollView>
               <StatusBar />
             </View>
@@ -142,7 +169,6 @@ export default function App() {
         <Stack.Screen name="NewPost" options={{ title: 'NewPost', headerShown: false }}>
           {({ navigation }) => <NewPostPage navigation={navigation} publisherId={isLoggedIn} posts={posts} setPosts={setPosts} />}
         </Stack.Screen>
-        {/* <Stack.Screen name="Signup" component={Signup} options={{ title: 'Signup', headerShown: false }} /> */}
         <Stack.Screen name="Signup" options={{ title: 'Signup', headerShown: false }}>
           {({ navigation }) => <Signup navigation={navigation} setIsLoggedIn={setIsLoggedIn} />}
         </Stack.Screen>
@@ -178,6 +204,14 @@ const styles = StyleSheet.create({
     height: 90,
     backgroundColor: 'black',
   },
+  imgContainer2: {
+    flexDirection: 'row',
+    paddingBottom: 10,
+    width: '100%',
+    height: 50,
+    backgroundColor: 'black',
+    justifyContent: "center",
+  },
   image: {
     width: 150,
     height: '100%',
@@ -187,5 +221,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end'
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    maxWidth: '70%',
+    color: 'white',
+    paddingHorizontal: 10,
+    backgroundColor: '#333',
+    borderRadius: 5,
   },
 });
