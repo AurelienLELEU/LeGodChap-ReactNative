@@ -5,7 +5,7 @@ import { View, Button, StyleSheet } from 'react-native';
 // Functional component for language toggle
 export default function LanguageToggle({ onLanguageChange }) {
   // State variable for storing the selected language
-  const [language, setLanguage] = useState('EN');
+  const [language, setLanguage] = useState('FR');
 
   // Function to toggle between languages
   const toggleLanguage = (lang) => {

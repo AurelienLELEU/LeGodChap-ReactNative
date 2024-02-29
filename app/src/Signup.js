@@ -58,9 +58,7 @@ const Signup = ({ navigation, setIsLoggedIn }) => {
 
         if (existingUsers) {
           // If username or email is already taken, show an alert message
-          if (existingUsers.username === username) {
-            Alert.alert('Username or Email is already taken');
-          } else if (existingUsers.mail === email) {
+          if (existingUsers.username === username || existingUsers.mail === email) {
             Alert.alert('Username or Email is already taken');
           }
           return;
