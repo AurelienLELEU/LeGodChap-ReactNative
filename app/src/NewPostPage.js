@@ -31,22 +31,24 @@ export default function NewPostPage({ navigation, publisherId, setPosts }) {
     const currentDate = new Date();
     try {
       // Insert new post into the database
-      const { error } = await supabase.from('posts').insert([
-        {
-          titleFR: titleFR,
-          titleEN: titleEN,
-          image: image,
-          descFR: contentFR,
-          descEN: contentEN,
-          publisherId: Number(publisherId),
-          created_at: currentDate.toDateString(),
-        },
-      ]);
-      if (error){
-        console.log(error);
+      if (titleFR && descFR) {
+        const { error } = await supabase.from('posts').insert([
+          {
+            titleFR: titleFR,
+            titleEN: titleEN,
+            image: image,
+            descFR: contentFR,
+            descEN: contentEN,
+            publisherId: Number(publisherId),
+            created_at: currentDate.toDateString(),
+          },
+        ]);
+        if (error) {
+          console.log(error);
+        }
+        fetchPosts(); // Fetch updated posts after creating a new one
+        navigation.goBack(); // Navigate back after creating the post
       }
-      fetchPosts(); // Fetch updated posts after creating a new one
-      navigation.goBack(); // Navigate back after creating the post
     } catch (error) {
       console.error('Error creating post:', error.message);
     }
@@ -75,7 +77,7 @@ export default function NewPostPage({ navigation, publisherId, setPosts }) {
 // Styles for the component
 const styles = StyleSheet.create({
   label: {
-    color:'white',
+    color: 'white',
   },
   container: {
     flex: 1,

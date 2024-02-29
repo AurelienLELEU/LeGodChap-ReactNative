@@ -269,8 +269,8 @@ export default function App() {
                     .map((post, index) => (
                       <Post
                         key={index}
-                        title={language === 'FR' ? post.titleFR : post.titleEN}
-                        content={language === 'FR' ? post.descFR : post.descEN}
+                        title={language === 'FR' ? post.titleFR : (post.titleEN ? post.titleEN : post.titleFR)}
+                        content={language === 'FR' ? post.descFR : (post.descEN ? post.descEN : post.descFR)}
                         image={post.image}
                         publisherId={post.publisherId}
                         createdAt={post.created_at}
