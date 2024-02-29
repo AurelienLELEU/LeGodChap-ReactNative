@@ -1,4 +1,4 @@
-import { View, Button, StyleSheet, Image, ScrollView, StatusBar, TextInput } from 'react-native';
+import { Text, View, Button, StyleSheet, Image, ScrollView, StatusBar, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,41 +13,56 @@ import Signup from './src/Signup';
 import Login from './src/Login';
 import FREN from './src/FREN';
 import Post from './src/Post';
-import SearchBar from 'react-native-searchbar';
 
 const supabaseUrl = 'https://eblwtaeglbtxppddyygp.supabase.co';
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibHd0YWVnbGJ0eHBwZGR5eWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NzQzNTMsImV4cCI6MjAyMjQ1MDM1M30.6t0_jPNYubLCPmEl8TrK8GCG8g4QRp1mSUejzcMLPH8";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator(); // Stack Navigator for navigation
 
 export default function App() {
+  // State variables initialization
   const [language, setLanguage] = useState('FR');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [posts, setPosts] = useState('');
   const [filter, setFilter] = useState('');
+  const [sortTitle, setSortTitle] = useState('');
+  const [sortDate, setSortDate] = useState('');
 
-
+  // Fetch user info on component mount and login status change
   useEffect(() => {
     fetchUserInfo();
   }, [isLoggedIn]);
 
-  const handleLanguageChange = (lang) => {
-    setLanguage(lang);
-  };
-
+  // Fetch all posts on component mount
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      console.log(isLoggedIn);
-    } else {
-      console.log("User is not logged in");
-    }
-  }, [isLoggedIn]);
+  // Function to handle language change
+  const handleLanguageChange = (lang) => {
+    setLanguage(lang);
+  };
 
+  // Function to fetch user info from AsyncStorage
+  const fetchUserInfo = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('loggedInUserId');
+      if (userId) {
+        setIsLoggedIn(userId);
+      }
+    } catch (error) {
+      console.error('Error fetching logged-in user ID:', error.message);
+    }
+  };
+
+  // Function to handle logout
+  const handleLogout = async () => {
+    setIsLoggedIn(false);
+    await AsyncStorage.removeItem('loggedInUserId');
+  };
+
+  // Function to fetch posts from Supabase
   const fetchPosts = async () => {
     const { data, error } = await supabase.from('posts').select('*');
     if (error) {
@@ -56,6 +71,49 @@ export default function App() {
       setPosts(data);
     }
   };
+
+  // Function to sort posts by recent
+  function sortByRecent() {
+    const sortedPosts = [...posts].sort((a, b) => b.id - a.id);
+    setPosts(sortedPosts);
+    setSortDate(1);
+  }
+
+  // Function to sort posts by oldest
+  function sortByOldest() {
+    const sortedPosts = [...posts].sort((a, b) => a.id - b.id);
+    setPosts(sortedPosts);
+    setSortDate(0);
+  }
+
+  // Function to sort posts by title in ascending order (FR)
+  function sortByTitleFRAsc() {
+    const sortedPosts = [...posts].sort((a, b) => a.titleFR.localeCompare(b.titleFR));
+    setPosts(sortedPosts);
+    setSortTitle(0);
+  }
+
+  // Function to sort posts by title in descending order (FR)
+  function sortByTitleFRDesc() {
+    const sortedPosts = [...posts].sort((a, b) => b.titleFR.localeCompare(a.titleFR));
+    setPosts(sortedPosts);
+    setSortTitle(1);
+  }
+
+  // Function to sort posts by title in ascending order (EN)
+  function sortByTitleENAsc() {
+    const sortedPosts = [...posts].sort((a, b) => a.titleEN.localeCompare(b.titleEN));
+    setPosts(sortedPosts);
+    setSortTitle(0);
+  }
+
+  // Function to sort posts by title in descending order (EN)
+  function sortByTitleENDesc() {
+    const sortedPosts = [...posts].sort((a, b) => b.titleEN.localeCompare(a.titleEN));
+    setPosts(sortedPosts);
+    setSortTitle(1);
+  }
+
 
   const SvgIconNewPost = ({ onPress }) => (
     <TouchableOpacity style={styles.svg} onPress={onPress}>
@@ -91,21 +149,47 @@ export default function App() {
     </TouchableOpacity>
   );
 
-  const fetchUserInfo = async () => {
-    try {
-      const userId = await AsyncStorage.getItem('loggedInUserId');
-      if (userId) {
-        setIsLoggedIn(userId);
-      }
-    } catch (error) {
-      console.error('Error fetching logged-in user ID:', error.message);
-    }
-  };
+  const SvgCalendarDown = ({ onPress }) => (
+    <TouchableOpacity style={styles.svg} onPress={onPress}>
+      <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-calendar-date" viewBox="0 0 16 16">
+        <Path d="M6.445 11.688V6.354h-.633A13 13 0 0 0 4.5 7.16v.695c.375-.257.969-.62 1.258-.777h.012v4.61zm1.188-1.305c.047.64.594 1.406 1.703 1.406 1.258 0 2-1.066 2-2.871 0-1.934-.781-2.668-1.953-2.668-.926 0-1.797.672-1.797 1.809 0 1.16.824 1.77 1.676 1.77.746 0 1.23-.376 1.383-.79h.027c-.004 1.316-.461 2.164-1.305 2.164-.664 0-1.008-.45-1.05-.82zm2.953-2.317c0 .696-.559 1.18-1.184 1.18-.601 0-1.144-.383-1.144-1.2 0-.823.582-1.21 1.168-1.21.633 0 1.16.398 1.16 1.23" />
+        <Path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+      </Svg>
+      <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-arrow-down-short" viewBox="0 0 16 16">
+        <Path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
+      </Svg>
+    </TouchableOpacity>
+  );
 
-  const handleLogout = async () => {
-    setIsLoggedIn(false);
-    await AsyncStorage.removeItem('loggedInUserId');
-  };
+  const SvgCalendarUp = ({ onPress }) => (
+    <TouchableOpacity style={styles.svg} onPress={onPress}>
+      <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-calendar-date" viewBox="0 0 16 16">
+        <Path d="M6.445 11.688V6.354h-.633A13 13 0 0 0 4.5 7.16v.695c.375-.257.969-.62 1.258-.777h.012v4.61zm1.188-1.305c.047.64.594 1.406 1.703 1.406 1.258 0 2-1.066 2-2.871 0-1.934-.781-2.668-1.953-2.668-.926 0-1.797.672-1.797 1.809 0 1.16.824 1.77 1.676 1.77.746 0 1.23-.376 1.383-.79h.027c-.004 1.316-.461 2.164-1.305 2.164-.664 0-1.008-.45-1.05-.82zm2.953-2.317c0 .696-.559 1.18-1.184 1.18-.601 0-1.144-.383-1.144-1.2 0-.823.582-1.21 1.168-1.21.633 0 1.16.398 1.16 1.23" />
+        <Path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+      </Svg>
+      <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-arrow-up-short" viewBox="0 0 16 16">
+        <Path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5" />
+      </Svg>
+    </TouchableOpacity>
+  );
+
+  const BtnAaDown = ({ onPress }) => (
+    <TouchableOpacity style={styles.svg} onPress={onPress}>
+      <Text style={styles.Aa}>Aa</Text>
+      <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-arrow-down-short" viewBox="0 0 16 16">
+        <Path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
+      </Svg>
+    </TouchableOpacity>
+  );
+
+  const BtnAaUp = ({ onPress }) => (
+    <TouchableOpacity style={styles.svg} onPress={onPress}>
+      <Text style={styles.Aa}>Aa</Text>
+      <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-arrow-up-short" viewBox="0 0 16 16">
+        <Path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5" />
+      </Svg>
+    </TouchableOpacity>
+  );
 
   return (
     <NavigationContainer>
@@ -139,6 +223,41 @@ export default function App() {
                   />
                 </View>
               </View>
+              <View style={styles.imgContainer2}>
+                <View style={styles.imgContainer2}>
+                  {sortDate ? (
+                    <View>
+                      <SvgCalendarDown onPress={sortByOldest} />
+                    </View>
+                  ) : (
+                    <View>
+                      <SvgCalendarUp onPress={sortByRecent} />
+                    </View>
+                  )}
+                  {language === 'FR' ? (
+                    sortTitle ? (
+                      <View>
+                        <BtnAaUp onPress={sortByTitleFRAsc} />
+                      </View>
+                    ) : (
+                      <View>
+                        <BtnAaDown onPress={sortByTitleFRDesc} />
+                      </View>
+                    )
+                  ) : (
+                    sortTitle ? (
+                      <View>
+                        <BtnAaUp onPress={sortByTitleENAsc} />
+                      </View>
+                    ) : (
+                      <View>
+                        <BtnAaDown onPress={sortByTitleENDesc} />
+                      </View>
+                    )
+                  )
+                  }
+                </View>
+              </View>
               <ScrollView>
                 {posts &&
                   posts
@@ -154,6 +273,7 @@ export default function App() {
                         content={language === 'FR' ? post.descFR : post.descEN}
                         image={post.image}
                         publisherId={post.publisherId}
+                        createdAt={post.created_at}
                         postId={post.id}
                         posts={posts}
                         setPosts={setPosts}
@@ -187,7 +307,11 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  Aa: {
+    color: 'white',
+  },
   svg: {
+    color: 'white',
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center'

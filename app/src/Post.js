@@ -9,9 +9,13 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 
+
+// Post component
 export default function Post(props) {
-  const [publisher, setPublisher] = useState(null);
+  const [publisher, setPublisher] = useState(null); // State variable for storing publisher username
   const navigation = useNavigation(); // Get navigation object
+
+  // Function to fetch posts from the database
   const fetchPosts = async () => {
     const { data, error } = await supabase.from('posts').select('*');
     if (error) {
@@ -20,6 +24,8 @@ export default function Post(props) {
       props.setPosts(data);
     }
   };
+
+  // Effect hook to fetch publisher details when props.publisherId changes
   useEffect(() => {
     // Fetch publisher details
     const fetchPublisher = async () => {
@@ -47,15 +53,16 @@ export default function Post(props) {
     fetchPublisher();
   }, [props.publisherId]);
 
+  // Function to handle editing a post
   const handleEdit = () => {
     // Navigate to the EditPostPage with postId as parameter
-    console.log(props.postId);
     navigation.navigate('EditPostPage', { postId: props.postId });
   };
 
+  // Function to handle removing a post
   const handleRemove = async () => {
-    // Navigate to the EditPostPage with postId as parameter
     try {
+      // Delete the post from the database
       const { data, error } = await supabase
         .from('posts')
         .delete()
@@ -68,35 +75,39 @@ export default function Post(props) {
     } catch (error) {
       console.error('Error updating post:', error.message);
     }
-    fetchPosts();
+    fetchPosts(); // Fetch updated posts after removing one
   };
 
   return (
     <View>
+      {/* Card component to display post */}
       <Card containerStyle={styles.card}>
+        {/* Display post image if available */}
         <View style={styles.imageContainer}>
           {props.image ? <Image source={{ uri: props.image }} style={styles.image} /> : null}
         </View>
         <Card.Divider />
+        {/* Display post title and content */}
         <Card.Title>{props.title}</Card.Title>
         <Text style={styles.content}>{props.content}</Text>
-        {publisher && <Text style={styles.publisher}>Published by: {publisher}</Text>}
-        {/* Button to edit post */}
+        {/* Display publisher username and publication date */}
+        {publisher && <Text style={styles.publisher}>Published by: {publisher} on {props.createdAt}</Text>}
+        {/* Display edit and remove post options for the logged-in user */}
         {props.isLoggedIn == props.publisherId ? 
         <>
           <TouchableOpacity onPress={handleEdit}>
             <Text style={styles.editButton}>Edit Post</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleRemove}>
-            <Text style={styles.editButton}>remove Post</Text>
+            <Text style={styles.editButton}>Remove Post</Text>
           </TouchableOpacity> 
           </> : null}
-
       </Card>
     </View>
   );
 }
 
+// Styles for the component
 const styles = StyleSheet.create({
   card: {
     padding: 10,
