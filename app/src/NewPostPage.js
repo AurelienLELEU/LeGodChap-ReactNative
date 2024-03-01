@@ -31,7 +31,7 @@ export default function NewPostPage({ navigation, publisherId, setPosts }) {
     const currentDate = new Date();
     try {
       // Insert new post into the database
-      if (titleFR && descFR) {
+      if (titleFR && contentFR) {
         const { error } = await supabase.from('posts').insert([
           {
             titleFR: titleFR,
